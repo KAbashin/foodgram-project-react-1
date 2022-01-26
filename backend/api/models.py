@@ -1,25 +1,39 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
 
-class Recipe(models.Model):
-    "Рецепты"
-    pass
-
-class Teg(models.Model):
+class Tag(models.Model):
     "Тэги"
-    name = models.CharField('Имя тэга', max_length=256)
-    # color = models.CharField()
-    slug = models.SlugField('Slug тэга', max_length=150, unique=True)
+    RED = '#FF0000'
+    GREEN = '#008000'
+    ORANGE = '#FFA500'
+    YELLOW = '#FFFF00'
+    BLUE = '#0000FF'
+    BROWN = '#A52A2A'
+    FUCHSIA = '#FF00FF'
 
-    def __str__(self):
-        return self.slug
+    COLOR_CHOICES = [
+        (RED, 'Желтый'),
+        (GREEN, 'Зеленый'),
+        (ORANGE, 'Оранжевый'),
+        (YELLOW, 'Желтый'),
+        (BLUE, 'Синий'),
+        (BROWN, 'Коричневый'),
+        (FUCHSIA, 'Фиолетовый')
+    ]
+
+    name = models.CharField(verbose_name='Тэг', max_length=150, unique=True)
+    color = models.CharField(max_length=7, unique=True, choices=COLOR_CHOICES,verbose_name='Цвет')
+    slug = models.SlugField(verbose_name='Slug тэга', max_length=150, unique=True)
 
     class Meta:
         ordering = ['id', ]
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
-class Ingredient(models.Model):
-    "Ингредиенты"
-    pass
+
+    def __str__(self):
+        return self.slug
