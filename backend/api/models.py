@@ -104,3 +104,16 @@ class IngredientQuantity(models.Model):
             1, message='Минимальное количество ингредиентов 1'),
         ]
     )
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        verbose_name='Пользователь'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Рецепт'
+    )
