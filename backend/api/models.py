@@ -46,6 +46,19 @@ class Ingredient(models.Model):
     measurement_unit = models.CharField(
         verbose_name='Единица измерения', max_length=20)
 
+    class Meta:
+        ordering = ['-name']
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'measurement_unit'],
+                                    name='unique ingredient')
+        ]
+
+
+    def __str__(self):
+        return self.name
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
@@ -77,6 +90,12 @@ class Recipe(models.Model):
             1, message='Минимальное время приготовления 1 минута'),
         ]
     )
+    #TODO Нужно ли это поле
+    pub_date = models.DateField(auto_now_add=True)
+
+
+    # class Meta:
+    #     ordering = ['-id']
 
 
 class Cart(models.Model):
