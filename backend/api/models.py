@@ -37,3 +37,36 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.slug
+
+
+class Ingredient(models.Model):
+    "Ингредиенты"
+    pass
+
+
+class Recipe(models.Model):
+    "Рецепты"
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               related_name='recipes',
+                               verbose_name='Автор рецепта')
+    name = models.CharField(verbose_name='Название рецепта', max_length=200)
+    image = models.ImageField(verbose_name='Изображение рецепта',
+                              upload_to='recipes/')
+    text = models.TextField(verbose_name='Описание рецепта')
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientQuantity',
+        verbose_name='Ингредиенты',
+        related_name='recipes'
+    )
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='recipes',
+        verbose_name='Тэги',
+        help_text='Установите тэг'
+    )
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='Время приготовления',
+        validators=[MinValueValidator(
+            1, message='Минимальное время приготовления 1 минута'),]
+    )
