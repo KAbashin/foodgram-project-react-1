@@ -32,7 +32,7 @@ class Tag(models.Model):
         verbose_name='Slug тэга', max_length=150, unique=True)
 
     class Meta:
-        ordering = ['id', ]
+        ordering = ['-id']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -90,12 +90,15 @@ class Recipe(models.Model):
             1, message='Минимальное время приготовления 1 минута'),
         ]
     )
-    #TODO Нужно ли это поле
-    pub_date = models.DateField(auto_now_add=True)
+    pub_date = models.DateField(
+        verbose_name='Дата публикации', auto_now_add=True)
 
 
-    # class Meta:
-    #     ordering = ['-id']
+    class Meta:
+        ordering = ['pub_date']
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
 
 
 class Cart(models.Model):
