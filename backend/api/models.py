@@ -1,6 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
+from django.db import models
 
 User = get_user_model()
 
@@ -27,7 +27,7 @@ class Tag(models.Model):
     name = models.CharField(
         verbose_name='Тэг', max_length=150, unique=True)
     color = models.CharField(
-        max_length=7, unique=True, choices=COLOR_CHOICES,verbose_name='Цвет')
+        verbose_name='Цвет', max_length=7, choices=COLOR_CHOICES, unique=True)
     slug = models.SlugField(
         verbose_name='Slug тэга', max_length=150, unique=True)
 
@@ -35,7 +35,6 @@ class Tag(models.Model):
         ordering = ['id', ]
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
-
 
     def __str__(self):
         return self.slug
@@ -88,4 +87,20 @@ class Cart(models.Model):
         on_delete=models.CASCADE,
         related_name='cart',
         verbose_name='Рецепт'
+    )
+
+
+class IngredientQuantity(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE,
+        verbose_name='Ингредиент'
+    )
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE,
+        verbose_name='Рецепт'
+    )
+    quantity = models.PositiveSmallIntegerField(
+        verbose_name='Количество', validators=[MinValueValidator(
+            1, message='Минимальное количество ингредиентов 1'),
+        ]
     )
