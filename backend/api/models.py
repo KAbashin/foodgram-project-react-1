@@ -24,9 +24,12 @@ class Tag(models.Model):
         (FUCHSIA, 'Фиолетовый')
     ]
 
-    name = models.CharField(verbose_name='Тэг', max_length=150, unique=True)
-    color = models.CharField(max_length=7, unique=True, choices=COLOR_CHOICES,verbose_name='Цвет')
-    slug = models.SlugField(verbose_name='Slug тэга', max_length=150, unique=True)
+    name = models.CharField(
+        verbose_name='Тэг', max_length=150, unique=True)
+    color = models.CharField(
+        max_length=7, unique=True, choices=COLOR_CHOICES,verbose_name='Цвет')
+    slug = models.SlugField(
+        verbose_name='Slug тэга', max_length=150, unique=True)
 
     class Meta:
         ordering = ['id', ]
@@ -46,12 +49,16 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='recipes',
-                               verbose_name='Автор рецепта')
-    name = models.CharField(verbose_name='Название рецепта', max_length=200)
-    image = models.ImageField(verbose_name='Изображение рецепта',
-                              upload_to='recipes/')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='Автор рецепта'
+    )
+    name = models.CharField(
+        verbose_name='Название рецепта', max_length=200)
+    image = models.ImageField(
+        verbose_name='Изображение рецепта', upload_to='recipes/')
     text = models.TextField(verbose_name='Описание рецепта')
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -68,5 +75,17 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
         validators=[MinValueValidator(
-            1, message='Минимальное время приготовления 1 минута'),]
+            1, message='Минимальное время приготовления 1 минута'),
+        ]
+    )
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='cart',
+        verbose_name='Рецепт'
     )
