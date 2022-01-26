@@ -6,7 +6,6 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    "Тэги"
     RED = '#FF0000'
     GREEN = '#008000'
     ORANGE = '#FFA500'
@@ -40,12 +39,13 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    "Ингредиенты"
-    pass
+    name = models.CharField(
+        verbose_name='Название ингредиента', max_length=200, unique=True)
+    measurement_unit = models.CharField(
+        verbose_name='Единица измерения', max_length=20)
 
 
 class Recipe(models.Model):
-    "Рецепты"
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='recipes',
                                verbose_name='Автор рецепта')
