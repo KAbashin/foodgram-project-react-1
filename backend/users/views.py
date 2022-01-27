@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from .models import Follow
+from .serializers import FollowSerializers
+from rest_framework import viewsets
 
-# Create your views here.
+
+class FollowViewSet(viewsets.ModelViewSet):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializers
