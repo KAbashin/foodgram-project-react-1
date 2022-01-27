@@ -148,3 +148,12 @@ class Favorite(models.Model):
         related_name='favorites',
         verbose_name='Рецепт'
     )
+
+    class Mets:
+        ordering = ['-id']
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='unique favorite recipe for user')
+        ]
