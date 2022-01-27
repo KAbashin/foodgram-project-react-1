@@ -1,4 +1,4 @@
-from models import Tag
+from .models import Tag
 from rest_framework import viewsets
 
 
