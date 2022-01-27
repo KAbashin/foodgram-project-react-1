@@ -136,6 +136,15 @@ class IngredientQuantity(models.Model):
         ]
     )
 
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Количество ингредиента'
+        verbose_name_plural = 'Количество ингредиентов'
+        constraints = [
+            models.UniqueConstraint(fields=['ingredient', 'recipe'],
+                                    name='unique ingredients recipe')
+        ]
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(
