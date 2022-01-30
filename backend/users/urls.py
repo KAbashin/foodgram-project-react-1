@@ -1,14 +1,14 @@
 from django.urls import include, path
 from rest_framework import routers
-# from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter
 
 # from .views import CustomUserViewSet
 from .views import FollowViewSet
 
+app_name = 'api_users'
 
-app_name = 'api'
-router = routers.DefaultRouter()
-# router.register('users', FollowViewSet)
+
+router = DefaultRouter()
 
 router.register(r'subscriptions', FollowViewSet, basename='subscriptions')
 router.register(

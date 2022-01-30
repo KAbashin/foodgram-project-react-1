@@ -8,6 +8,7 @@ from .permissions import UserOrReadOnly, AuthorOrReadOnly
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializers
+    permission_classes = (UserOrReadOnly,)
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()

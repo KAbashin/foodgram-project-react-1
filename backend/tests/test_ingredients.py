@@ -1,10 +1,36 @@
-# import pytest
-# from django.contrib.auth import get_user_model
+import pytest
 
-# User = get_user_model()
+from api.models import Ingredient
 
 
-# class TestJWT:
-#     url_create = '/api/auth/jwt/create/'
-#     url_refresh = '/api/auth/jwt/refresh/'
-#     url_verify = '/api/auth/jwt/verify/'
+class TestRecipeAPI:
+
+    @pytest.mark.django_db(transaction=True)
+    def test_ingredient_not_authenticated(self, client):
+        response = client.get(f'/api/ingredients/')
+
+        code = 401
+        assert response.status_code == code, (
+            'Анонимный пользователь при get запросе `/api/ingredients/` '
+            f'должен получать ответ с кодом {code}'
+        )
+    
+    @pytest.mark.django_db(transaction=True)
+    def test_ingredient_authenticated(self, user_client):
+        response = user_client.get(f'/api/ingredients/')
+
+        code = 200
+        assert response.status_code == code, (
+            'Авторизованный пользователь при get запросе `/api/ingredients/` '
+            f'должен получать ответ с кодом {code}'
+        )
+    
+    @pytest.mark.django_db(transaction=True)
+    def test_ingredient_authenticated(self, user_client, ingredient_1):
+        response = user_client.get(f'/api/ingredients/{ingredient_1.id}')
+
+        code = 200
+        assert response.status_code == code, (
+            'Авторизованный пользователь при get запросе `/api/ingredients/id` '
+            f'должен получать ответ с кодом {code}'
+        )

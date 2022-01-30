@@ -3,7 +3,7 @@ import pytest
 from api.models import Cart
 
 
-class TestRecipeAPI:
+class TestCartAPI:
 
     @pytest.mark.django_db(transaction=True)
     def test_download_shopping_cart_not_authenticated(self, client):
