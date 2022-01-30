@@ -1,6 +1,6 @@
+from rest_framework import viewsets
 from .models import Follow
 from .serializers import FollowSerializers
-from rest_framework import viewsets
 
 
 class FollowViewSet(viewsets.ModelViewSet):

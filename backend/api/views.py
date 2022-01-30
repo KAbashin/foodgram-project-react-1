@@ -1,7 +1,8 @@
+from rest_framework import viewsets
 from .models import Tag, Recipe, Cart, Favorite, Ingredient
 from .serializers import (TagSerializers, RecipeSerializers, CartSerializers,
                           FavoriteSerializers, IngredientSerializers)
-from rest_framework import viewsets
+from .permissions import UserOrReadOnly, AuthorOrReadOnly
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -11,6 +12,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializers
+    permission_classes = (UserOrReadOnly,)
 
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
