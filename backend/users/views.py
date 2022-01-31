@@ -1,7 +1,6 @@
 from api.serializers import FollowSerializer
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
-from numpy import False_
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -12,6 +11,7 @@ from rest_framework.response import Response
 from .models import Follow
 
 User = get_user_model
+
 
 class CustomUserViewset(UserViewSet):
     pagination_class = LimitOffsetPagination
@@ -46,7 +46,7 @@ class CustomUserViewset(UserViewSet):
             follow, context={'request': request}
         )
         return Response('Подписка успешно создана',
-        serializer.data, status=status.HTTP_201_CREATED)
+                        serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete
     def del_subscribe(self, request, id=None):
@@ -61,7 +61,7 @@ class CustomUserViewset(UserViewSet):
         if follow.exists():
             follow.delete()
             return Response(
-                'Успешная отписка',status=status.HTTP_204_NO_CONTENT)
+                'Успешная отписка', status=status.HTTP_204_NO_CONTENT)
 
         return Response({
             'error': 'Ошибка отписки, вы не были подписаны'
