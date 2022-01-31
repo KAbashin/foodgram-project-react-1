@@ -28,9 +28,9 @@ def another_user(django_user_model):
 
 
 @pytest.fixture
-def user_client(token):
+def user_client(django_user_model):
     from rest_framework.test import APIClient
-
+    # user = django_user_model.objects.create_user(username='TestUser', password='1234567')
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Token {token["access"]}')
+    client.force_authenticate(user=None)
     return client
