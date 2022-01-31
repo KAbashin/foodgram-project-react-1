@@ -1,9 +1,8 @@
-from numpy import source
-from rest_framework import serializers
 from django.shortcuts import get_object_or_404
-from .models import Tag, Recipe, Cart, Favorite, Ingredient
+from rest_framework import serializers
 from users.models import Follow
-from users.serializers import CustomUserSerializer
+
+from .models import Cart, Favorite, Ingredient, Recipe, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -11,15 +10,18 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
+
 class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = '__all__'
 
+
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
+
 
 class FollowSerializer(serializers.ModelSerializer):
     email = serializers.ReadOnlyField(source='author.email')
@@ -36,13 +38,13 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = ('email', 'id', 'username', 'first_name', 'last_name', 
                   'is_subscribed', 'recipes_count')
 
-    def get_is_subscribed(self, object):
+    def get_is_subscribed(self, obj):
         return Follow.objects.filter(
-            user=object.user, author=object.author
+            user=obj.user, author=obj.author
         ).exists()
 
-    def get_recipes(self, object):
-        return Recipe.objects.filter(author=object.author)
+    def get_recipes(self, abj):
+        return Recipe.objects.filter(author=abj.author)
 
-    def get_recipes_count(self, object):
-        return Recipe.objects.filter(author=object.author).count()
+    def get_recipes_count(self, abj):
+        return Recipe.objects.filter(author=abj.author).count()
