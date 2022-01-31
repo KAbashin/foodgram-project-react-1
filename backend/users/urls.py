@@ -1,11 +1,10 @@
 from django.urls import include, path
-from rest_framework import routers
 from rest_framework.routers import DefaultRouter
 
 # from .views import CustomUserViewSet
 from .views import FollowViewSet
 
-app_name = 'api_users'
+app_name = 'api'
 
 
 router = DefaultRouter()

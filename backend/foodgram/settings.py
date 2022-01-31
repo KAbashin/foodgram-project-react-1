@@ -142,6 +142,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
+#TODO Добавить настройки сериализаторов и разрешений
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
