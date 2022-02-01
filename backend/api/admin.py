@@ -1,23 +1,34 @@
-from django.contrib import admin
+from django.contrib.admin import register, ModelAdmin
 
-from .models import Recipe, Ingredient, Tag, Cart, Favorite, IngredientQuantity
-
-class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author',)
-    list_filter = ('name', 'author', 'tags',)
-    search_fields = ('name', 'author', 'tags',)
-    empty_value_display = '-пусто-'
+from .models import Cart, Favorite, Ingredient, Recipe, Tag
 
 
-class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit',)
-    search_fields = ('name', 'measurement_unit',)
+@register(Tag)
+class TagAdmin(ModelAdmin):
+    list_display = ('name', 'slug', 'color')
+
+
+@register(Ingredient)
+class IngredientAdmin(ModelAdmin):
+    list_display = ('name', 'measurement_unit')
     list_filter = ('name',)
 
 
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Tag)
-admin.site.register(Cart)
-admin.site.register(Favorite)
-admin.site.register(IngredientQuantity)
+@register(Recipe)
+class RecipeAdmin(ModelAdmin):
+    list_display = ('name', 'author')
+    list_filter = ('author', 'name', 'tags')
+    readonly_fields = ('count_favorites',)
+
+    #TODO Добавить русское название строки
+    def count_favorites(self, obj):
+        return obj.favorites.count()
+
+
+@register(Cart)
+class CartAdmin(ModelAdmin):
+    pass
+
+@register(Favorite)
+class FavoriteAdmin(ModelAdmin):
+    pass
