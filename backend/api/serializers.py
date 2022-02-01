@@ -58,8 +58,8 @@ class FollowSerializer(serializers.ModelSerializer):
         return User.objects.filter(user=obj.user, author=obj.author).exists()
 
     def get_recipes(self, obj):
-        queryset = Recipe.objects.filter(author=obj.author)
+        queryset = obj.recipes.all()
         return CropRecipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
-        return obj.recipes.filter(author=obj.author).count()
+        return obj.recipes.count()
