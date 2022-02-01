@@ -1,3 +1,31 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, register
 
-# Register your models here.
+from .models import AmountIngredient, Ingredient, Recipe, Tag
+
+
+@register(Tag)
+class TagAdmin(ModelAdmin):
+    list_display = ('name', 'slug', 'color')
+
+
+@register(Ingredient)
+class IngredientAdmin(ModelAdmin):
+    list_display = ('name', 'measurement_unit')
+    list_filter = ('name',)
+
+
+@register(Recipe)
+class RecipeAdmin(ModelAdmin):
+    list_display = ('name', 'author')
+    list_filter = ('author', 'name', 'tags')
+    readonly_fields = ('count_favorites',)
+
+    def count_favorites(self, obj):
+        return obj.favorites.count()
+
+    count_favorites.short_description = 'Число добавлений в избранное'
+
+
+@register(AmountIngredient)
+class AmountIngredientAdmin(ModelAdmin):
+    pass
