@@ -1,21 +1,32 @@
-from rest_framework import viewsets
-from .models import Tag, Recipe, Cart, Favorite, Ingredient
-from .serializers import TagSerializer, RecipeSerializer, IngredientSerializer
-from .permissions import UserOrReadOnly, AuthorOrReadOnly
+
+from rest_framework import status, viewsets
+
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.pagination import LimitOffsetPagination
+
+from api.models import (Cart, Favorite, Ingredient, IngredientQuantity, Recipe,
+                        Tag)
+from api.permissions import IsAdminOrReadOnly
+from api.serializers import ( IngredientSerializer,
+                             RecipeSerializer, TagSerializer)
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagsViewSet(ReadOnlyModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (UserOrReadOnly,)
+    # filter_backends = (DjangoFilterBackend,)
+    # filterset_fields = ('name')
+
+
+class IngredientsViewSet(ReadOnlyModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    permission_classes = (UserOrReadOnly,)
-
-
-class IngredientViewSet(viewsets.ModelViewSet):
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
+    pagination_class = LimitOffsetPagination
