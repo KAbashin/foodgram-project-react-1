@@ -1,6 +1,6 @@
 from django.contrib.admin import ModelAdmin, register
 
-from .models import AmountIngredient, Ingredient, Recipe, Tag
+from .models import IngredientAmount, Ingredient, Recipe, Tag, Favorite, Cart
 
 
 @register(Tag)
@@ -26,6 +26,16 @@ class RecipeAdmin(ModelAdmin):
     count_favorites.short_description = 'Число добавлений в избранное'
 
 
-@register(AmountIngredient)
-class AmountIngredientAdmin(ModelAdmin):
+@register(IngredientAmount)
+class IngredientAmountAdmin(ModelAdmin):
+    pass
+
+
+@register(Favorite)
+class FavoriteAdmin(ModelAdmin):
+    pass
+
+
+@register(Cart)
+class CartAdmin(ModelAdmin):
     pass
