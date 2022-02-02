@@ -1,10 +1,5 @@
-from django.contrib.admin import register
-from django.contrib.auth.admin import UserAdmin
+from django.contrib import admin
 
-from .models import CustomUser
+from users.models import Follow
 
-
-@register(CustomUser)
-class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'email',)
-    list_filter = ('first_name', 'email')
+admin.site.register(Follow)

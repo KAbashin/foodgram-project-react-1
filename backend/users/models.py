@@ -1,46 +1,30 @@
-from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator
+from django.contrib.auth import get_user_model
 from django.db import models
 
+User = get_user_model()
 
-class CustomUser(AbstractUser):
 
-    email = models.EmailField(
-        verbose_name='Адрес электронной почты',
-        max_length=254,
-        unique=True
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='Подписчик',
     )
-    username = models.CharField(
-        verbose_name='Уникальный юзернейм',
-        max_length=150,
-        unique=True,
-        validators=[MinValueValidator(
-            0, message='Переданное значение слишком короткое.'),
-        ]
-    )
-    first_name = models.CharField(
-        verbose_name='Имя', max_length=150)
-    last_name = models.CharField(
-        verbose_name='Фамилия', max_length=150)
-    password = models.CharField(
-        verbose_name='password', max_length=150)
-    subscribe = models.ManyToManyField(
-        verbose_name='Подписка',
-        related_name='subscribers',
-        to='self',
-        symmetrical=False,
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='Автор',
     )
 
     class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
-        ordering = ('username',)
-        constraints = (
-            models.CheckConstraint(
-                check=models.Q(username__length__gte=0),
-                name='\nusername too short\n',
-            ),
-        )
-
-    def __str__(self):
-        return f'{self.username}: {self.email}'
+        ordering = ['-id']
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_follow',
+            )
+        ]
