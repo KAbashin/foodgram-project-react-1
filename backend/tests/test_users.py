@@ -72,3 +72,20 @@ class TestUsersAPI:
             f'При запросе без данных на {url}'
             f'должен получать ответ с кодом {code}'
         )
+
+    # @pytest.mark.django_db(transaction=True)
+    # def test_token_login(self, client):
+
+    # Obtain a CSRF Token.
+    #     response = client.post('/api/auth/token/login/')
+    #     assert response.status_code == 201
+    #     token = response.cookies['token']
+
+    # Interact with the API.
+    #     response = client.post('/api/auth/token/login/', json={
+    #         'email': 'vasya@yandex.ru',
+    #         'password': 'Qwerty123!'
+    #     })
+    #     token = response.COOKIES['auth_token']
+    #
+    #     assert token == True

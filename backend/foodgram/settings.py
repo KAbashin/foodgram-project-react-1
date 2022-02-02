@@ -143,23 +143,23 @@ REST_FRAMEWORK = {
     ],
     # 'DEFAULT_FILTER_BACKENDS': [
     #     'django_filters.rest_framework.DjangoFilterBackend'],
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 6,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,
 }
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'api.serializers.UserSerializer',
-        'user': 'users.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
-        'user_list': 'api.serializers.UserSerializer',
+        'user_create': 'api.serializers.FollowSerializer',
+        'user': 'users.serializers.FollowSerializer',
+        'current_user': 'api.serializers.FollowSerializer',
+        'user_list': 'api.serializers.FollowSerializer',
     },
     'PERMISSIONS': {
         'resipe': ('api.permissions.AuthorStaffOrReadOnly,',),
         'recipe_list': ('api.permissions.AuthorStaffOrReadOnly',),
-        'user': ('api.permissions.OwnerUserOrReadOnly',),
-        'user_list': ('api.permissions.OwnerUserOrReadOnly',),
+        'user': ('api.permissions.AdminUserOrReadOnly',),
+        'user_list': ('api.permissions.AdminUserOrReadOnly',),
     }
 }

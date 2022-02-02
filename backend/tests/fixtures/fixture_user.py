@@ -1,14 +1,36 @@
 import pytest
+from rest_framework.test import APIClient
 
 
 @pytest.fixture
-def user(django_user_model):
-    return django_user_model.objects.create_user(username='TestUser', password='1234567')
+def user_1(django_user_model):
+    user = django_user_model.objects.create_user(
+            email='lesha@yandex.ru',
+            username='lesha',
+            first_name='Леша',
+            last_name='Патрон',
+            password='Qwerty123!'
+        )
+    client = APIClient()
+    client.force_authenticate(user=user)
+    return client
+
+# @pytest.fixture
+# def user_1():
+#     client = APIClient()
+#     client.force_authenticate(user=None)
+#     return client
 
 
 @pytest.fixture
 def user_2(django_user_model):
-    return django_user_model.objects.create_user(username='TestUser2', password='1234567')
+    return django_user_model.objects.create_user(
+            email='petya@yandex.ru',
+            username='petya',
+            first_name='Петя',
+            last_name='Васичкин',
+            password='Qwerty123!'
+        )
 
 
 @pytest.fixture
@@ -29,8 +51,13 @@ def another_user(django_user_model):
 
 @pytest.fixture
 def user_client(django_user_model):
-    from rest_framework.test import APIClient
-    # user = django_user_model.objects.create_user(username='TestUser', password='1234567')
+    user = django_user_model.objects.create_user(
+        email= 'vasya@yandex.ru',
+        username= 'vasya',
+        first_name = 'Вася',
+        last_name = 'Пупкин',
+        password = 'Qwerty123!'
+    )
     client = APIClient()
-    client.force_authenticate(user=None)
+    client.force_authenticate(user=user)
     return client
