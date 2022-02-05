@@ -9,11 +9,11 @@ import pytest
 
 @pytest.fixture
 def tag_1():
-    from api.models import Tag
+    from recipes.models import Tag
     return Tag.objects.create(name='Таг_1', color='BLUE', slug='Группа_1')
 
 
 @pytest.fixture
 def ingredient_1():
-    from api.models import Ingredient
+    from recipes.models import Ingredient
     return Ingredient.objects.create(name='Ингредиент_1', measurement_unit='г.')

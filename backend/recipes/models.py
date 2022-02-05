@@ -31,10 +31,10 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
-        ordering = ['-name']
+        ordering = ['name']
         constraints = [
             models.UniqueConstraint(fields=['name', 'measurement_unit'],
-                                    name='unique_ingredient')
+                                    name='unique_for_ingredient')
             ]
 
     def __str__(self) -> str:
@@ -56,9 +56,10 @@ class Recipe(models.Model):
     text = models.TextField(
         verbose_name='Текстовое описание')
     ingredients = models.ManyToManyField(
-        'IngredientAmount',
+        Ingredient,
+        through='recipes.IngredientAmount',
         verbose_name='Ингредиенты',
-        related_name='recipes'
+        related_name='recipes',
     )
     tags = models.ManyToManyField(
         Tag, verbose_name='Тег', related_name='recipes')
@@ -75,7 +76,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ('pub_date', )
+        ordering = ('-pub_date', )
         constraints = (
             models.UniqueConstraint(
                 fields=('name', 'author'),
@@ -88,13 +89,20 @@ class Recipe(models.Model):
 
 
 class IngredientAmount(models.Model):
-    ingredient = models.ForeignKey(
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='В каких рецептах',
+        related_name='ingredient',
+    )
+    ingredients = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Связанные ингредиенты',
         related_name='recipe',
     )
     amount = models.PositiveSmallIntegerField(
+        default=1,
         validators=(
             validators.MinValueValidator(
                 1, message='Минимальное количество ингридиентов 1'),),
@@ -106,12 +114,12 @@ class IngredientAmount(models.Model):
         verbose_name = 'Количество ингридиента'
         verbose_name_plural = 'Количество ингридиентов'
         constraints = [
-            models.UniqueConstraint(fields=['ingredient', 'amount'],
+            models.UniqueConstraint(fields=['recipe', 'ingredients'],
                                     name='unique_ingredients_recipe')
         ]
 
     def __str__(self) -> str:
-        return f'{self.ingredient.name} - {self.amount}'
+        return f'{self.ingredients.name} - {self.amount}'
 
 
 class Cart(models.Model):
