@@ -169,7 +169,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         'measurement_unit': measurement_unit,
                         'amount': amount}
                 else:
-                    dict[name]['amount'] = (dict[name]['amount'] + amount)
+                    dict[name]['amount'] += amount
         list = []
         i = 0
         for key in dict:

@@ -57,7 +57,7 @@ class CustomUserSerializer(UserSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ('name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -118,13 +118,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             if int(ingredient.get('amount')) <= 0:
                 raise serializers.ValidationError(
-                    ('Убедитесь, что значение количества '
-                     'ингредиента больше 0')
+                    ('Минимальное количество ингридиентов 1')
                 )
             id = ingredient.get('id')
             if id in ingredients_set:
                 raise serializers.ValidationError(
-                    'Ингредиент в рецепте не должен повторяться.'
+                    'Ингредиент не должен повторяться.'
                 )
             ingredients_set.add(id)
         data['ingredients'] = ingredients
