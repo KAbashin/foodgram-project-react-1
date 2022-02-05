@@ -1,27 +1,26 @@
-from django.http import HttpResponse, FileResponse
+import io
+
+from django.contrib.auth import get_user_model
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
-from rest_framework.status import HTTP_400_BAD_REQUEST
-import io
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from api.filters import TagFilter
-from recipes.models import (
-    Cart, Favorite, Ingredient, IngredientAmount, Recipe, Tag)
-from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
-from api.serializers import (ShortRecipeSerializer, IngredientSerializer,
-                             RecipeSerializer, TagSerializer)
-from django.contrib.auth import get_user_model
-from djoser.views import UserViewSet
 from rest_framework.decorators import action
-from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from rest_framework.pagination import PageNumberPagination
-from api.serializers import FollowSerializer
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from users.models import Follow
+
+from api.filters import TagFilter
+from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
+from api.serializers import (FollowSerializer, IngredientSerializer,
+                             RecipeSerializer, ShortRecipeSerializer,
+                             TagSerializer)
 
 User = get_user_model()
 
@@ -54,7 +53,8 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 class FollowViewSet(UserViewSet):
     pagination_class = PageNumberPagination
 
-    @action(methods=['post',], detail=True, permission_classes=[IsAuthenticated])
+    @action(
+        methods=['post', ], detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
         '''Подписаться'''
         user = request.user
@@ -62,7 +62,7 @@ class FollowViewSet(UserViewSet):
 
         if user == author:
             return Response({
-                'errors': 'Ошибка подписки, нельзя подписываться на самого себя'
+                'errors': 'Ошибка подписки, нельзя подписываться на себя'
             }, status=status.HTTP_400_BAD_REQUEST)
         if Follow.objects.filter(user=user, author=author).exists():
             return Response({
@@ -153,7 +153,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_400_BAD_REQUEST)
 
     #TODO Уточнить
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    @action(
+        detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         user = get_object_or_404(User, username=request.user.username)
         shopping_cart = user.cart.all()

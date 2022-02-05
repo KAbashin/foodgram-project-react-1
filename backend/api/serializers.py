@@ -1,12 +1,11 @@
+from django.contrib.auth import get_user_model
+from django.db.models import F
 from django.shortcuts import get_object_or_404
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
-from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from django.db.models import F
-
 from users.models import Follow
 
 User = get_user_model()
