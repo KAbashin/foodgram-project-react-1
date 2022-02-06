@@ -92,7 +92,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             'is_shopping_cart',
         )
 
-    #TODO Выяснить F
     def get_ingredients(self, obj):
         ingredients = obj.ingredients.values(
             'id', 'name', 'measurement_unit', amount=F('recipe__amount')
