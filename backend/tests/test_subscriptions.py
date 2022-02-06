@@ -2,24 +2,25 @@ import pytest
 
 
 class TestFollowAPI:
+    url_subscr = '/api/users/subscriptions/'
 
     @pytest.mark.django_db(transaction=True)
     def test_subscriptions_not_authenticated(self, client):
-        response = client.get('/api/users/subscriptions/')
+        response = client.get(self.url_subscr)
 
         code = 401
         assert response.status_code == code, (
-            'Анонимный пользователь при get запросе `/api/users/subscriptions/` '
+            f'Анонимный пользователь при get запросе {self.url_subscr}'
             f'должен получать ответ с кодом {code}'
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_subscriptions_authenticated(self, user_client):
-        response = user_client.get('/api/users/subscriptions/')
+        response = user_client.get(self.url_subscr)
 
         code = 200
         assert response.status_code == code, (
-            'Авторизованный пользователь при get запросе `/api/users/subscriptions/` '
+            f'Авторизованный пользователь при get запросе {self.url_subscr}'
             f'должен получать ответ с кодом {code}'
         )
 
@@ -29,7 +30,8 @@ class TestFollowAPI:
 
         code = 401
         assert response.status_code == code, (
-            f'Анонимный пользователь при post запросе `/api/users/{user_2.id}/subscribe/` '
+            'Анонимный пользователь при post запросе'
+            f'на "/api/users/{user_2.id}/subscribe/" '
             f'должен получать ответ с кодом {code}'
         )
 
@@ -39,16 +41,7 @@ class TestFollowAPI:
 
         code = 201
         assert response.status_code == code, (
-            f'Авторизованный пользователь при post запросе "/api/users/"{user_2.id}"/subscribe/" '
-            f'должен получать ответ с кодом {code}'
-        )
-
-    @pytest.mark.django_db(transaction=True)
-    def test_id_subscribe_2_authenticated(self, user_1, user_2):
-        response = user_1.post(f'/api/users/{user_2.id}/subscribe/')
-
-        code = 201
-        assert response.status_code == code, (
-            f'Авторизованный пользователь при post запросе "/api/users/"{user_2.id}"/subscribe/" '
+            'Авторизованный пользователь при post запросе'
+            f'на "/api/users/{user_2.id}/subscribe/" '
             f'должен получать ответ с кодом {code}'
         )
