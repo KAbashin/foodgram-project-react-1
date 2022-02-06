@@ -1,12 +1,7 @@
-import io
-
 from django.contrib.auth import get_user_model
-from django.http import FileResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from django.db.models import Sum, F
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -155,7 +150,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
-    #TODO Исправить
+    #TODO Доделать
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
@@ -164,10 +159,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredients__name',
             'ingredients__measurement_unit').annotate(total=Sum('amount'))
         shopping_list = 'список:\n'
-        for ingredient in ingredients:
-            shopping_list += (
-                f'{ingredient["ingredients__name"]} '
-                f'{ingredient["ingredients__measurement_unit"]}\n')
 
         purchase_list = 'foodgram_list.txt'
         response = HttpResponse(shopping_list, content_type='text/plain')
