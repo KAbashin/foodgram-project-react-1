@@ -1,7 +1,5 @@
 import pytest
 
-from recipes.models import Tag
-
 
 class TestTagAPI:
     tags = '/api/tags/'
@@ -42,7 +40,8 @@ class TestTagAPI:
 
         code = 200
         assert response.status_code == code, (
-            f'Авторизованный пользователь при get запросе {self.tags}{tag_1.id}/'
+            'Авторизованный пользователь при get запросе'
+            f'- на {self.tags}{tag_1.id}/'
             f'должен получать ответ с кодом {code}'
         )
 

@@ -114,7 +114,6 @@ class TestUsersAPI:
             f'должен получать ответ с кодом {code}'
         )
 
-    #TODO Исправить
     @pytest.mark.skip(reason="Не валидные данные")
     @pytest.mark.django_db(transaction=True)
     def test_user_set_password_valid(self, user_client):
@@ -160,7 +159,6 @@ class TestUsersAPI:
             f'должен получать ответ с кодом {code}'
         )
 
-    # TODO Исправить
     @pytest.mark.skip(reason="Не валидные данные")
     @pytest.mark.django_db(transaction=True)
     def test_user_token_login(self, user_client):

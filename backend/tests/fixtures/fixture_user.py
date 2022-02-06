@@ -5,11 +5,11 @@ from rest_framework.test import APIClient
 @pytest.fixture
 def user_client(django_user_model):
     user = django_user_model.objects.create_user(
-        email= 'user@yandex.ru',
-        username= 'user',
-        first_name = 'user',
-        last_name = 'user',
-        password = 'Qwerty123!'
+        email='user@yandex.ru',
+        username='user',
+        first_name='user',
+        last_name='user',
+        password='Qwerty123!'
     )
     client = APIClient()
     client.force_authenticate(user=user)
@@ -32,23 +32,3 @@ def user_2(django_user_model):
 def another_user(django_user_model):
     return django_user_model.objects.create_user(
         username='TestUserAnother', password='1234567')
-
-
-# @pytest.fixture
-# def token(user):
-#     from rest_framework_simplejwt.tokens import RefreshToken
-#     refresh = RefreshToken.for_user(user)
-#
-#     return {
-#         'refresh': str(refresh),
-#         'access': str(refresh.access_token),
-#     }
-#
-#
-# @pytest.fixture
-# def user_client(token):
-#     from rest_framework.test import APIClient
-#
-#     client = APIClient()
-#     client.credentials(HTTP_AUTHORIZATION=f'Bearer {token["access"]}')
-#     return client

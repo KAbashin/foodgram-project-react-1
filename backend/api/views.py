@@ -2,22 +2,20 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from django.db.models import Sum, F
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag, \
-    IngredientAmount
-from users.models import Follow
 
 from api.filters import TagFavoritShopingFilter
 from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              RecipeSerializer, ShortRecipeSerializer,
                              TagSerializer)
+from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
+from users.models import Follow
 
 User = get_user_model()
 
@@ -111,7 +109,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
@@ -149,19 +146,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'errors': 'Ошибка удаления рецепта из списка'
         }, status=status.HTTP_400_BAD_REQUEST)
 
-
-    #TODO Доделать
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        ingredients = IngredientAmount.objects.filter(
-            recipe__cart__user=request.user).values(
-            'ingredients__name',
-            'ingredients__measurement_unit').annotate(total=Sum('amount'))
-        shopping_list = 'список:\n'
-
-        purchase_list = 'foodgram_list.txt'
-        response = HttpResponse(shopping_list, content_type='text/plain')
-        response['Content-Disposition'] = (f'attachment;'
-                                           f'filename={purchase_list}')
+        user = get_object_or_404(User, username=request.user.username)
+        shopping_cart = user.cart.all()
+        dict = {}
+        for num in shopping_cart:
+            ingredients_list = num.recipe.ingredient.all()
+            for ingredient in ingredients_list:
+                name = ingredient.ingredients.name
+                amount = ingredient.amount
+                measurement_unit = ingredient.ingredients.measurement_unit
+                if name not in dict:
+                    dict[name] = {
+                        'measurement_unit': measurement_unit,
+                        'amount': amount}
+                else:
+                    dict[name]['amount'] = (dict[name]['amount'] + amount)
+        list = []
+        i = 0
+        for key in dict:
+            i += 1
+            list.append(f'{i}. {key} - {dict[key]["amount"]} '
+                        f'{dict[key]["measurement_unit"]}')
+        filename = 'shopping_cart.txt'
+        response = HttpResponse(list, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
