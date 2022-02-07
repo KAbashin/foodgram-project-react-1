@@ -1,5 +1,7 @@
 import pytest
 
+from recipes.models import Tag
+
 
 class TestTagAPI:
     tags = '/api/tags/'
@@ -55,3 +57,38 @@ class TestTagAPI:
             'на не существующий id'
             f'должен получать ответ с кодом {code}'
         )
+
+    @pytest.mark.django_db(transaction=True)
+    def test_tag_get(self, user_client, tag_1, tag_2):
+        response = user_client.get(f'{self.tags}')
+
+        test_data = response.json()
+        assert type(test_data) == dict, (
+            f'При GET запросе на {self.tags} должен вернуться словарь'
+        )
+
+        assert len(test_data['results']) == Tag.objects.all().count(), (
+            'При GET запросе должен возращатся весь список'
+        )
+
+        test_tag = test_data['results'][0]
+        assert 'id' in test_tag, (
+            'Проверить, что `id` в списке полей `fields`, '
+            'сериализатора модели Tag'
+        )
+
+        assert 'name' in test_tag, (
+            'Проверить, что `name` в списке полей `fields`, '
+            'сериализатора модели Tag'
+        )
+
+        assert 'color' in test_tag, (
+            'Проверить, что `color` в списке полей `fields`, '
+            'сериализатора модели Tag'
+        )
+
+        assert 'slug' in test_tag, (
+            'Проверить, что `slug` в списке полей `fields`, '
+            'сериализатора модели Tag'
+        )
+
