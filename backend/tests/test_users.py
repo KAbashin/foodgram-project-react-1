@@ -1,5 +1,9 @@
 import pytest
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 
 class TestUsersAPI:
     url_create = '/api/users/'
@@ -195,4 +199,48 @@ class TestUsersAPI:
             f'При запросе на {self.token_logout}'
             '- не авторизованный пользователь'
             f'должен получать ответ с кодом {code}'
+        )
+
+    @pytest.mark.django_db(transaction=True)
+    def test_user_get(self, user_client, user_2):
+        response = user_client.get(f'{self.url_create}')
+
+        test_data = response.json()
+        assert type(test_data) == dict, (
+            f'При GET запросе на {self.url_create} должен вернуться словарь'
+        )
+
+        assert len(test_data['results']) == User.objects.all().count(), (
+            'При GET запросе должен возвращаться весь список'
+        )
+
+        test_user = test_data['results'][0]
+        assert 'id' in test_user, (
+            'Проверить, что `id` в списке полей `fields`, '
+            'сериализатора модели User'
+        )
+
+        assert 'username' in test_user, (
+            'Проверить, что `username` в списке полей `fields`, '
+            'сериализатора модели User'
+        )
+
+        assert 'email' in test_user, (
+            'Проверить, что `email` в списке полей `fields`, '
+            'сериализатора модели User'
+        )
+
+        assert 'first_name' in test_user, (
+            'Проверить, что `first_name` в списке полей `fields`, '
+            'сериализатора модели User'
+        )
+
+        assert 'last_name' in test_user, (
+            'Проверить, что `last_name` в списке полей `fields`, '
+            'сериализатора модели User'
+        )
+
+        assert 'is_subscribed' in test_user, (
+            'Проверить, что `is_subscribed` в списке полей `fields`, '
+            'сериализатора модели User'
         )

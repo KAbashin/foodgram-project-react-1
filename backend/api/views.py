@@ -103,7 +103,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPagination
-    filter_class = TagFavoritShopingFilter
+    filterset_class = TagFavoritShopingFilter
     permission_classes = [AdminUserOrReadOnly, ]
 
     def perform_create(self, serializer):

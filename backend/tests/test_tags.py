@@ -68,7 +68,7 @@ class TestTagAPI:
         )
 
         assert len(test_data['results']) == Tag.objects.all().count(), (
-            'При GET запросе должен возращатся весь список'
+            'При GET запросе должен возвращаться весь список'
         )
 
         test_tag = test_data['results'][0]
