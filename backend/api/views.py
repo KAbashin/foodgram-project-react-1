@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -30,19 +31,11 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
     permission_classes = (AdminOrReadOnly,)
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-
-    def get_queryset(self):
-        name = self.request.query_params.get('name')
-        queryset = self.queryset
-        if name:
-            name = name.lower()
-            start_queryset = list(queryset.filter(name__startswith=name))
-            cont_queryset = queryset.filter(name__contains=name)
-            start_queryset.extend(
-                [i for i in cont_queryset if i not in start_queryset]
-            )
-            queryset = start_queryset
-        return queryset
+    filter_backends = (
+        DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('name',)
+    ordering_fields = ('name',)
+    ordering = ('name',)
 
 
 class FollowViewSet(UserViewSet):
@@ -78,13 +71,13 @@ class FollowViewSet(UserViewSet):
                 'errors': 'Ошибка отписки, нельзя отписываться от самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
         follow = Follow.objects.filter(user=user, author=author)
-        if follow.exists():
-            follow.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if not follow.exists():
+            return Response({
+                'errors': 'Ошибка отписки, вы уже отписались'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        follow.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-        return Response({
-            'errors': 'Ошибка отписки, вы уже отписались'
-        }, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
@@ -116,7 +109,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.add_obj(Favorite, request.user, pk)
         elif request.method == 'DELETE':
             return self.delete_obj(Favorite, request.user, pk)
-        return None
 
     @action(detail=True, methods=['post', 'delete'],
             permission_classes=[IsAuthenticated])
@@ -125,7 +117,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.add_obj(Cart, request.user, pk)
         elif request.method == 'DELETE':
             return self.delete_obj(Cart, request.user, pk)
-        return None
 
     def add_obj(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
@@ -151,26 +142,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         user = get_object_or_404(User, username=request.user.username)
         shopping_cart = user.cart.all()
-        dict = {}
+        shopping_dict = {}
         for num in shopping_cart:
-            ingredients_list = num.recipe.ingredient.all()
-            for ingredient in ingredients_list:
+            ingredients_queryset = num.recipe.ingredient.all()
+            for ingredient in ingredients_queryset:
                 name = ingredient.ingredients.name
                 amount = ingredient.amount
                 measurement_unit = ingredient.ingredients.measurement_unit
-                if name not in dict:
-                    dict[name] = {
+                if name not in shopping_dict:
+                    shopping_dict[name] = {
                         'measurement_unit': measurement_unit,
                         'amount': amount}
                 else:
-                    dict[name]['amount'] = (dict[name]['amount'] + amount)
-        list = []
-        i = 0
-        for key in dict:
-            i += 1
-            list.append(f'{i}. {key} - {dict[key]["amount"]} '
-                        f'{dict[key]["measurement_unit"]}')
+                    shopping_dict[name]['amount'] = (shopping_dict[name]['amount'] + amount)
+        shopping_list = []
+        for index, key in enumerate(shopping_dict):
+            shopping_list.append(f'{index}. {key} - {shopping_dict[key]["amount"]} '
+                        f'{shopping_dict[key]["measurement_unit"]}')
         filename = 'shopping_cart.txt'
-        response = HttpResponse(list, content_type='text/plain')
+        response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response

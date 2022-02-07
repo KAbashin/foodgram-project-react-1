@@ -133,6 +133,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         tags = self.initial_data.get('tags')
         recipe = Recipe.objects.create(image=image, **validated_data)
+        # super().create(validated_data)
         for tag_id in tags:
             recipe.tags.add(get_object_or_404(Tag, pk=tag_id))
         for ingredient in ingredients:
@@ -143,6 +144,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
+
         instance.tags.clear()
         tags = self.initial_data.get('tags')
         for tag_id in tags:
@@ -154,12 +156,13 @@ class RecipeSerializer(serializers.ModelSerializer):
                 ingredients_id=ingredient.get('id'),
                 amount=ingredient.get('amount'))
             ingredients_amounts.save()
-        if validated_data.get('image') is not None:
-            instance.image = validated_data.get('image')
-        instance.name = validated_data.get('name')
-        instance.text = validated_data.get('text')
-        instance.cooking_time = validated_data.get('cooking_time')
-        instance.save()
+        super().update(instance, validated_data)
+        # if validated_data.get('image') is not None:
+        #     instance.image = validated_data.get('image')
+        # instance.name = validated_data.get('name')
+        # instance.text = validated_data.get('text')
+        # instance.cooking_time = validated_data.get('cooking_time')
+        # instance.save()
         return instance
 
 
