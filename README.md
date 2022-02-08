@@ -117,11 +117,12 @@ a9c7a7542ddb   postgres:12.4                     "docker-entrypoint.s…"   3 we
 ```
 Назначение контейнеров:  
 
-|         IMAGES          | NAMES             |        DESCRIPTIONS         |
-|:-----------------------:|:------------------|:---------------------------:|
-|      nginx:1.19.3       | romangrbr_nginx_1 |   контейнер HTTP-сервера    |
-|      postgres:12.4      | romangrbr_web_1   |    контейнер базы данных    |
-| romangrbr/mysite:latest | romangrbr_db_1    | контейнер приложения Django |
+|          IMAGES           | NAMES                |        DESCRIPTIONS         |
+|:-------------------------:|:---------------------|:---------------------------:|
+|       nginx:1.19.3        | romangrbr_nginx_1    |   контейнер HTTP-сервера    |
+|       postgres:12.4       | romangrbr_db_1       |    контейнер базы данных    |
+| romangrbr/backend:latest  | romangrbr_backend_1  | контейнер приложения Django |
+| romangrbr/frontend:latest | romangrbr_frontend_1 | контейнер приложения React  |
 
 
 - Сделать миграции, создать суперпользователя и собрать статику:
@@ -130,20 +131,20 @@ docker-compose exec backend python manage.py makemigrations
 docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py createsuperuser
 docker-compose exec backend python manage.py collectstatic --no-input 
+docker-compose exec backend python manage.py loaddata db.json
 ```
 
-- Для переноса данных с файла fixtures.json на PostgreSQL выполним несколько команд:
+- Для переноса данных с файла ingredients.json на PostgreSQL выполним несколько команд:
     ```
-    docker-compose exec web python manage.py shell 
-    ```
-    ```
-    >>> from django.contrib.contenttypes.models import ContentType
-    >>> ContentType.objects.all().delete()
-    >>> quit()
+    docker-compose exec backend python manage.py shell 
     ```
     ```
-    docker-compose exec web м
+    >>> exec(open("/backend/static/data/filldb.py").read())
     ```
+    ```
+    docker-compose exec backend
+    ```
+
 ### Автор проекта:
 _Гербер Роман_  
 **email:** _romangrbr@gmail.com_  
