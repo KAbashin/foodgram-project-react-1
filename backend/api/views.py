@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.filters import TagFavoritShopingFilter
+from api.pagination import LimitPageNumberPagination
 from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              RecipeSerializer, ShortRecipeSerializer,
@@ -93,7 +94,7 @@ class FollowViewSet(UserViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = LimitPageNumberPagination
     filterset_class = TagFavoritShopingFilter
     permission_classes = [AdminUserOrReadOnly, ]
 

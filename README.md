@@ -112,7 +112,7 @@ _Пример:_
 ```
 CONTAINER ID   IMAGE                             COMMAND                  CREATED       STATUS       PORTS                               NAMES
 ffbe984f7533   nginx:1.19.3                      "/docker-entrypoint.…"   3 weeks ago   Up 3 weeks   0.0.0.0:80->80/tcp, :::80->80/tcp   romangrbr_nginx_1
-5166bcfb1188   romangrbr/mysite:latest           "/bin/sh -c 'gunicor…"   3 weeks ago   Up 3 weeks                                       romangrbr_web_1
+5166bcfb1188   romangrbr/mysite:latest           "/bin/sh -c 'gunicor…"   3 weeks ago   Up 3 weeks                                       romangrbr_backend_1
 a9c7a7542ddb   postgres:12.4                     "docker-entrypoint.s…"   3 weeks ago   Up 3 weeks   5432/tcp                            romangrbr_db_1
 ```
 Назначение контейнеров:  
@@ -126,10 +126,10 @@ a9c7a7542ddb   postgres:12.4                     "docker-entrypoint.s…"   3 we
 
 - Сделать миграции, создать суперпользователя и собрать статику:
 ```
-docker-compose exec web python manage.py makemigrations
-docker-compose exec web python manage.py migrate
-docker-compose exec web python manage.py createsuperuser
-docker-compose exec web python manage.py collectstatic --no-input 
+docker-compose exec backend python manage.py makemigrations
+docker-compose exec backend python manage.py migrate
+docker-compose exec backend python manage.py createsuperuser
+docker-compose exec backend python manage.py collectstatic --no-input 
 ```
 
 - Для переноса данных с файла fixtures.json на PostgreSQL выполним несколько команд:
