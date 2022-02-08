@@ -26,4 +26,3 @@ class TagFavoritShopingFilter(FilterSet):
     class Meta:
         model = Recipe
         fields = ('tags', 'is_favorited', 'is_in_shopping_cart', 'author')
-

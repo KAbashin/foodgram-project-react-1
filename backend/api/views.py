@@ -3,12 +3,11 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets, filters
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from api.filters import TagFavoritShopingFilter
 from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
@@ -21,13 +20,13 @@ from users.models import Follow
 User = get_user_model()
 
 
-class TagsViewSet(ReadOnlyModelViewSet):
+class TagsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AdminOrReadOnly,)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
-class IngredientsViewSet(ReadOnlyModelViewSet):
+class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AdminOrReadOnly,)
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
@@ -154,7 +153,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         'amount': amount}
                 else:
                     shopping_dict[name]['amount'] = (
-                            shopping_dict[name]['amount'] + amount)
+                        shopping_dict[name]['amount'] + amount)
+
         shopping_list = []
         for index, key in enumerate(shopping_dict):
             shopping_list.append(
