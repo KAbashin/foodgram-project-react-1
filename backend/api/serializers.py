@@ -156,13 +156,13 @@ class RecipeSerializer(serializers.ModelSerializer):
                 ingredients_id=ingredient.get('id'),
                 amount=ingredient.get('amount'))
             ingredients_amounts.save()
-        super().update(instance, validated_data)
-        # if validated_data.get('image') is not None:
-        #     instance.image = validated_data.get('image')
-        # instance.name = validated_data.get('name')
-        # instance.text = validated_data.get('text')
-        # instance.cooking_time = validated_data.get('cooking_time')
-        # instance.save()
+        # super().update(instance, validated_data)
+        if validated_data.get('image') is not None:
+            instance.image = validated_data.get('image')
+        instance.name = validated_data.get('name')
+        instance.text = validated_data.get('text')
+        instance.cooking_time = validated_data.get('cooking_time')
+        instance.save()
         return instance
 
 
