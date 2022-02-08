@@ -2,6 +2,7 @@ import pytest
 
 from recipes.models import Recipe
 
+
 class TestRecipeAPI:
     url_recipe = '/api/recipes/'
 

@@ -78,7 +78,6 @@ class FollowViewSet(UserViewSet):
         follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
@@ -154,11 +153,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         'measurement_unit': measurement_unit,
                         'amount': amount}
                 else:
-                    shopping_dict[name]['amount'] = (shopping_dict[name]['amount'] + amount)
+                    shopping_dict[name]['amount'] = (
+                            shopping_dict[name]['amount'] + amount)
         shopping_list = []
         for index, key in enumerate(shopping_dict):
-            shopping_list.append(f'{index}. {key} - {shopping_dict[key]["amount"]} '
-                        f'{shopping_dict[key]["measurement_unit"]}')
+            shopping_list.append(
+                f'{index}. {key} - {shopping_dict[key]["amount"]} '
+                f'{shopping_dict[key]["measurement_unit"]}')
         filename = 'shopping_cart.txt'
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
