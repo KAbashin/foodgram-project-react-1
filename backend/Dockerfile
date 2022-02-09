@@ -1,8 +1,3 @@
-#FROM python:3.7
-#WORKDIR /app
-#COPY . /app
-#RUN pip3 install -r requirements.txt
-#CMD ["gunicorn", "foodgram.wsgi:application", "--
 FROM python:3.7
 WORKDIR /code
 COPY requirements.txt requirements.txt
