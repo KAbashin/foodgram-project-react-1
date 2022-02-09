@@ -69,7 +69,7 @@ jobs:
       with:
         context: backend/
         push: true
-        tags: ${{ secrets.DOCKER_USER }}/foodgram_backend:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
 
   build_push_frontend_to_DockerHub:
     name: Building front image and pushing it to Docker Hub

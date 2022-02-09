@@ -22,7 +22,7 @@ services:
 # описание контейнера backend
   backend:
     # образ, из которого должен быть запущен контейнер
-    image: romangrbr/foodgram_backend
+    image: romangrbr/foodgram_backend:latest
     restart: always
     # volume и связанная с ним директория в контейнере
     volumes:
