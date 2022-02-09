@@ -35,7 +35,7 @@ iniconfig==1.1.1
 isort==5.10.1
 itypes==1.2.0
 Jinja2==3.0.3
-Markdow
+Markdown==3.3.6
 MarkupSafe==2.0.1
 marshmallow==3.14.1
 mccabe==0.6.1
