@@ -5,6 +5,7 @@ services:
 # описание контейнера frontend
   frontend:
     image: romangrbr/foodgram_frontend:latest
+    # volume и связанная с ним директория в контейнере
     volumes:
       - ./frontend/:/app/result_build/
 # описание контейнера db
@@ -21,7 +22,7 @@ services:
 # описание контейнера backend
   backend:
     # образ, из которого должен быть запущен контейнер
-    image: romangrbr/foodgram_backend:latest
+    image: romangrbr/foodgram_backend
     restart: always
     # volume и связанная с ним директория в контейнере
     volumes:
