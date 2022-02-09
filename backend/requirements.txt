@@ -38,7 +38,7 @@ Jinja2==3.0.3
 Markdown==3.3.6
 MarkupSafe==2.0.1
 marshmallow==3.14.1
-mccabe==0.7.0
+mccabe
 model-bakery==1.4.0
 oauthlib==3.2.0
 packaging==21.3
