@@ -22,7 +22,33 @@ jobs:
         cd backend/
         python -m flake8
 
-  build_and_push_to_docker_hub:
+  copy_infra_to_server:
+    name: Copy docker-compose.yml and nginx.conf
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create projects directory
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.HOST_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          sudo rm -rf foodgram/
+          mkdir -p foodgram/
+
+    - name: Copy files
+      uses: garygrossgarten/github-action-scp@release
+      with:
+          local: infra/
+          remote: /home/${{ secrets.HOST_USER }}/foodgram/
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.HOST_USER }}
+          privateKey: ${{ secrets.SSH_KEY }}
+
+  build_push_backend_to_DockerHub:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     needs: tests
@@ -40,18 +66,46 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Push to Docker Hub
+      - name: Push "foodgram/backend" to DockerHub
         # Пуш образа в Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: ./backend
-          file: ./backend/Dockerfile
+#          context: ./backend
+#          file: ./backend/Dockerfile
+          context: backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
 
+  build_push_frontend_to_DockerHub:
+    name: Building front image and pushing it to Docker Hub
+    runs-on: ubuntu-20.04
+    needs: tests
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Push "foodgram/frontend" to DockerHub
+        uses: docker/build-push-action@v2
+        with:
+          context: frontend/
+          push: true
+          tags: ${{ secrets.DOCKER_USER }}/foodgram_frontend:latest
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_push_to_docker_hub
+    needs: [
+      copy_infra_to_server,
+      build_push_backend_to_DockerHub,
+      build_push_frontend_to_DockerHub
+    ]
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     steps:
     - name: executing remote ssh commands to deploy
@@ -61,11 +115,12 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
+          cd foodgram/
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
           sudo docker-compose stop
-          sudo docker-compose rm backend
-          sudo docker-compose rm frontend
+          sudo docker-compose rm foodgram_backend
+          sudo docker-compose rm foodgram_frontend
           > .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
