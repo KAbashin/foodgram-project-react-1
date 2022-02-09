@@ -17,6 +17,17 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
 
+  back:
+    image: romangrbr/foodgram_backend
+    restart: always
+    volumes:
+      - static_value:/code/static
+      - media_value:/code/media
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
   nginx:
     image: nginx:1.19.3
     ports:
@@ -35,17 +46,3 @@ services:
     env_file:
       - ./.env
 
-  back:
-    image: romangrbr/foodgram_backend
-    restart: always
-    volumes:
-      - static_value:/code/static
-      - media_value:/code/media
-    depends_on:
-      - db
-      - redis
-    env_file:
-      - ./.env
-
-  redis:
-    image: redis:6.2.5
