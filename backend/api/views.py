@@ -14,8 +14,9 @@ from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              RecipeSerializer, ShortRecipeSerializer,
                              TagSerializer)
-from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
-from users.models import Follow
+
+from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag  # isort:skip
+from users.models import Follow  # isort:skip
 
 User = get_user_model()
 
