@@ -11,8 +11,9 @@ WORKDIR /app
 # в директорию .
 COPY requirements.txt /
 
-# Выполнить установку зависимостей внутри контейнера.
+# Выполнить обновление pip
 RUN pip install --upgrade pip
+# Выполнить установку зависимостей внутри контейнера.
 RUN pip install -r /requirements.txt --no-cache-dir
 
 # Скопировать содержимое директории ./ c локального компьютера
