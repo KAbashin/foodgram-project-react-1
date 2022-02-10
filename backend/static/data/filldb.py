@@ -1,4 +1,4 @@
-# exec(open("C:/Dev/foodgram-project-react/backend/static/data/filldb.py").read())
+# exec(open("/app/static/data/filldb.py").read())
 import json
 
 from django.db import transaction
@@ -6,7 +6,7 @@ from django.db import transaction
 from recipes.models import Ingredient
 
 json_file_path = (
-    'C:/Dev/foodgram-project-react/backend/static/data/ingredients.json')
+    'C:/app/static/data/ingredients.json')
 
 with open(json_file_path, encoding='utf-8') as f:
     data = json.load(f)

@@ -3,20 +3,19 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import filters, status, viewsets
+from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.filters import TagFavoritShopingFilter
+from api.filters import IngredientSearchFilter, TagFavoritShopingFilter
 from api.pagination import LimitPageNumberPagination
 from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              RecipeSerializer, ShortRecipeSerializer,
                              TagSerializer)
-
-from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag  # isort:skip
-from users.models import Follow  # isort:skip
+from users.models import Follow
 
 User = get_user_model()
 
@@ -31,11 +30,8 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AdminOrReadOnly,)
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (
-        DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('name',)
-    ordering_fields = ('name',)
-    ordering = ('name',)
+    filter_backends = (IngredientSearchFilter,)
+    search_fields = ('^name',)
 
 
 class FollowViewSet(UserViewSet):
@@ -95,7 +91,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
-    filterset_class = TagFavoritShopingFilter
+    filter_backends = [DjangoFilterBackend, ]
+    filter_class = TagFavoritShopingFilter
     permission_classes = [AdminUserOrReadOnly, ]
 
     def perform_create(self, serializer):
