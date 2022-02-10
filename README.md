@@ -24,8 +24,8 @@
 ### Admin
 Do not change the name and password data ))
 
-Username: foodgramadmin
-Password: foodgramadmin
+- Username: foodgramadmin
+- Password: foodgramadmin
 
 ### Основные адреса: 
 
