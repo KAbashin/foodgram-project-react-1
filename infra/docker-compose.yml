@@ -33,19 +33,15 @@ services:
       - backend
 
   nginx:
-    image: valian/docker-nginx-auto-ssl
+    image: nginx:1.19.3
     ports:
       - "80:80"
     volumes:
-      - ssl_data:/etc/resty-auto-ssl
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
-    environment:
-      ALLOWED_DOMAINS: ${ALLOWED_DOMAINS}
-      SITES: ${SITES}
     depends_on:
       - backend
       - frontend
@@ -53,4 +49,3 @@ volumes:
   postgres_data:
   static_value:
   media_value:
-  ssl_data:
