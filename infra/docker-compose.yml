@@ -1,48 +1,52 @@
 version: '3.3'
-volumes:
-  postgres_data:
-  static_value:
-  media_value:
 services:
   db:
-    image: postgres:12.4-alpine
-    restart: always
+    image: postgres:13.0-alpine
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - /var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - .env
 
-  frontend:
-    image: romangrbr/foodgram_frontend:latest
-    volumes:
-      - ../frontend/:/app/result_build/
-
-  back:
-    image: romangrbr/foodgram_backend
+  backend:
+#    build:
+#      context: ../backend/foodgram
+#      dockerfile: Dockerfile
+    image: romangrbr/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/code/static
-      - media_value:/code/media
+      - static_value:/app/static/
+      - media_value:/app/media/
+    ports:
+      - "8000:8000"
     depends_on:
       - db
     env_file:
-      - ./.env
+      - .env
+
+  frontend:
+#    build:
+#      context: ../frontend
+#      dockerfile: Dockerfile
+    image: romangrbr/foodgram_frontend:latest
+    volumes:
+      - ../frontend/:/app/result_build/
+    depends_on:
+      - backend
 
   nginx:
     image: nginx:1.19.3
     ports:
-      - 80:80
+      - "80:80"
     volumes:
-      - static_value:/static/
-      - media_value:/media/
-      - ./nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
-      - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
-    restart: always
+      - ../docs/:/usr/share/nginx/html/api/docs/
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
     depends_on:
-      - back
+      - backend
       - frontend
-    env_file:
-      - ./.env
-
+volumes:
+  postgres_data:
+  static_value:
+  media_value:
