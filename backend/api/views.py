@@ -91,13 +91,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
-    # filter_backends = (DjangoFilterBackend, OrderingFilter)
-    # filter_class = TagFavoritShopingFilter
     filter_backends = [DjangoFilterBackend, ]
     filter_class = TagFavoritShopingFilter
     permission_classes = [AdminUserOrReadOnly, ]
-    # filterset_fields = ("tags", "author")
-    # ordering_fields = ("id",)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
