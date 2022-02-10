@@ -1,4 +1,5 @@
 version: '3.3'
+# имена и описания контейнеров, которые должны быть развёрнуты
 services:
   db:
     image: postgres:13.3-alpine
