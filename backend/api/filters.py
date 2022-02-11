@@ -24,7 +24,7 @@ class TagFavoritShopingFilter(filters.FilterSet):
     def filter_is_in_shopping_cart(self, queryset, name, value):
         user = self.request.user
         if value:
-            return Recipe.objects.filter(shopping_cart__user=user)
+            return Recipe.objects.filter(cart__user=user)
         return queryset
 
     class Meta:

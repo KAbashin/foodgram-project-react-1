@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from rest_framework import status, viewsets
@@ -91,9 +90,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
-    filter_backends = (DjangoFilterBackend, )
     filter_class = TagFavoritShopingFilter
-    permission_classes = (AdminUserOrReadOnly, )
+    permission_classes = [AdminUserOrReadOnly, ]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
