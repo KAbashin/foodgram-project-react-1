@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.shortcuts import get_object_or_404
+from django.test import tag
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -111,42 +112,54 @@ class RecipeSerializer(serializers.ModelSerializer):
         return Cart.objects.filter(user=user, recipe=obj).exists()
 
     def validate(self, data):
-        # ingredients = self.initial_data.get('ingredients')
-        # ingredients_set = set()
-        # for ingredient in ingredients:
-        #     if int(ingredient.get('amount')) <= 0:
-        #         raise serializers.ValidationError(
-        #             ('Минимальное количество ингридиентов 1')
-        #         )
-        #     id = ingredient.get('id')
-        #     if id in ingredients_set:
-        #         raise serializers.ValidationError(
-        #             'Ингредиент не должен повторяться.'
-        #         )
-        #     ingredients_set.add(id)
-        # data['ingredients'] = ingredients
-        # return data
-        if data['cooking_time'] < 1:
-            raise serializers.ValidationError(
-                'Время приготовления не может быть меньше одной минуты!')
-        if len(data['tags']) == 0:
-            raise serializers.ValidationError('Нужно указать хотя бы 1 тег')
-        if len(data['tags']) > len(set(data['tags'])):
-            raise serializers.ValidationError('Теги не должны повторяться')
-        if len(data['ingredients']) == 0:
-            raise serializers.ValidationError(
-                'Нужно указать хотя бы 1 ингредиент')
-        id_ingredients = []
-        for ingredient in data['ingredients']:
-            if ingredient['amount'] < 1:
+
+
+        cooking_time = self.initial_data.get('cooking_time')
+        if int(cooking_time) <= 0:
                 raise serializers.ValidationError(
-                    'Минимальное количество ингридиентов 1'
+                    'Время приготовления не может быть меньше одной минуты!'
                 )
-            id_ingredients.append(ingredient['id'])
-        if len(id_ingredients) > len(set(id_ingredients)):
-            raise serializers.ValidationError(
-                'Ингредиент не должен повторяться')
+        tags = self.initial_data.get('tag')
+        if len(tags) == 0:
+            raise serializers.ValidationError('Нужно указать хотя бы 1 тег')
+        ingredients = self.initial_data.get('ingredients')
+        ingredients_set = set()
+        for ingredient in ingredients:
+            if int(ingredient.get('amount')) <= 0:
+                raise serializers.ValidationError(
+                    ('Минимальное количество ингридиентов 1')
+                )
+            id = ingredient.get('id')
+            if id in ingredients_set:
+                raise serializers.ValidationError(
+                    'Ингредиент не должен повторяться.'
+                )
+            ingredients_set.add(id)
+        data['ingredients'] = ingredients
+        data['tags'] = tags
+        data['cooking_time'] = cooking_time
         return data
+        # if data['cooking_time'] < 1:
+        #     raise serializers.ValidationError(
+        #         'Время приготовления не может быть меньше одной минуты!')
+        # if len(data['tags']) == 0:
+        #     raise serializers.ValidationError('Нужно указать хотя бы 1 тег')
+        # if len(data['tags']) > len(set(data['tags'])):
+        #     raise serializers.ValidationError('Теги не должны повторяться')
+        # if len(data['ingredients']) == 0:
+        #     raise serializers.ValidationError(
+        #         'Нужно указать хотя бы 1 ингредиент')
+        # id_ingredients = []
+        # for ingredient in data['ingredients']:
+        #     if ingredient['amount'] < 1:
+        #         raise serializers.ValidationError(
+        #             'Минимальное количество ингридиентов 1'
+        #         )
+        #     id_ingredients.append(ingredient['id'])
+        # if len(id_ingredients) > len(set(id_ingredients)):
+        #     raise serializers.ValidationError(
+        #         'Ингредиент не должен повторяться')
+        # return data
 
     def create(self, validated_data):
         image = validated_data.pop('image')
