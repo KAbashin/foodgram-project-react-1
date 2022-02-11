@@ -111,13 +111,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         return Cart.objects.filter(user=user, recipe=obj).exists()
 
     def validate(self, data):
-        cooking_time = self.initial_data.get('cooking_time')
-        if int(cooking_time) <= 0:
-            raise serializers.ValidationError(
-                'Время приготовления не может быть меньше одной минуты!')
-        tags = self.initial_data.get('tag')
-        if len(tags) == 0:
-            raise serializers.ValidationError('Нужно указать хотя бы 1 тег')
+        # cooking_time = self.initial_data.get('cooking_time')
+        # if int(cooking_time) <= 0:
+        #     raise serializers.ValidationError(
+        #         'Время приготовления не может быть меньше одной минуты!')
+        # tags = self.initial_data.get('tag')
+        # if len(tags) == 0:
+        #     raise serializers.ValidationError('Нужно указать хотя бы 1 тег')
         ingredients = self.initial_data.get('ingredients')
         ingredients_set = set()
         for ingredient in ingredients:
@@ -132,8 +132,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                 )
             ingredients_set.add(id)
         data['ingredients'] = ingredients
-        data['tags'] = tags
-        data['cooking_time'] = cooking_time
         return data
 
     def create(self, validated_data):
