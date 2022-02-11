@@ -6,7 +6,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag  # isort:skip
+from recipes.models import Ingredient, IngredientAmount, Recipe, Tag, Cart  # isort:skip
 from users.models import Follow  # isort:skip
 
 User = get_user_model()
@@ -108,7 +108,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
+        return Cart.objects.filter(user=user, recipe=obj).exists()
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
