@@ -5,15 +5,15 @@ from djoser.views import UserViewSet
 from recipes.models import Cart, Favorite, Ingredient, Recipe, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from api.filters import IngredientSearchFilter, TagFavoritShopingFilter
 from api.pagination import LimitPageNumberPagination
 from api.permissions import AdminOrReadOnly, AdminUserOrReadOnly
 from api.serializers import (FollowSerializer, IngredientSerializer,
-                             RecipeSerializer, ShortRecipeSerializer,
-                             TagSerializer)
+                             RecipeReadSerializer, RecipeWriteSerializer,
+                             ShortRecipeSerializer, TagSerializer)
 from users.models import Follow
 
 User = get_user_model()
@@ -88,10 +88,14 @@ class FollowViewSet(UserViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
     filter_class = TagFavoritShopingFilter
     permission_classes = [AdminUserOrReadOnly, ]
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return RecipeReadSerializer
+        return RecipeWriteSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
