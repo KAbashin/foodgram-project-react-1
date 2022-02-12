@@ -125,8 +125,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post', ],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
-        if Cart.objects.filter(user=request.user,
-                                   recipe__id=pk).exists():
+        if Cart.objects.filter(user=request.user, recipe__id=pk).exists():
             return Response({
                 'errors': 'Ошибка добавления, рецепт уже в списке покупок'
             }, status=status.HTTP_400_BAD_REQUEST)
