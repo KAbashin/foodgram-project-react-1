@@ -69,6 +69,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
     ingredients = serializers.SerializerMethodField()
+    # ingredients = IngredientRecipeSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -130,9 +131,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         ingredients_set = set()
         for ingredient in ingredients:
-            ingredient = ingredient.get('amount')
-            if type(ingredient) == str:
-                if not ingredient.isdigit():
+            if type(ingredient.get('amount')) == str:
+                if not ingredient.get('amount').isdigit():
                     raise serializers.ValidationError(
                         ('Количество ингредиента дольжно быть чилом')
                     )
