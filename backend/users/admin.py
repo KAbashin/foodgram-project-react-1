@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import register
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
@@ -10,6 +11,10 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ['email', 'username', ]
 
 
+@register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('author', 'user')
+
+
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(Follow)

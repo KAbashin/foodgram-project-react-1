@@ -114,6 +114,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         ingredients_set = set()
         for ingredient in ingredients:
+            if type(ingredient.get('amount')) != int:
+                raise serializers.ValidationError(
+                    ('Количество ингредиента дольжно быть целым чилом')
+                )
             if int(ingredient.get('amount')) <= 0:
                 raise serializers.ValidationError(
                     ('Минимальное количество ингридиентов 1')
