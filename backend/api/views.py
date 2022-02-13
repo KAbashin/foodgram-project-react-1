@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import BooleanField, Exists, OuterRef, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -35,6 +36,23 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class FollowViewSet(UserViewSet):
     pagination_class = LimitPageNumberPagination
+    # add_serializer = FollowSerializer
+    # queryset = Follow.objects.all()
+    #
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     if user.is_authenticated:
+    #         queryset = User.objects.all().annotate(
+    #             is_subscribed=Exists(Follow.objects.filter(
+    #                 user=user, author__pk=OuterRef('pk'))
+    #             )
+    #         )
+    #         return queryset
+    #
+    #     queryset = User.objects.all().annotate(
+    #         is_subscribed=Value(False, output_field=BooleanField())
+    #     )
+    #     return queryset
 
     @action(
         methods=['post', ], detail=True, permission_classes=[IsAuthenticated])
@@ -100,6 +118,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = Recipe.objects.all().annotate(
+                is_favorited=Exists(Favorite.objects.filter(
+                    user=user, recipe__pk=OuterRef('pk'))
+                ),
+                is_in_shopping_cart=Exists(Cart.objects.filter(
+                    user=user, recipe__pk=OuterRef('pk'))
+                )
+            )
+            return queryset
+
+        queryset = Recipe.objects.all().annotate(
+            is_favorited=Value(False, output_field=BooleanField()),
+            is_in_shopping_cart=Value(False, output_field=BooleanField())
+        )
+        return queryset
+
     @action(detail=True, methods=['post', ],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
@@ -143,41 +180,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response({
             'errors': 'Ошибка удаления, рецепта нет в списке покупок'
         }, status=status.HTTP_400_BAD_REQUEST)
-
-    # @action(detail=True, methods=['post', 'delete'],
-    #         permission_classes=[IsAuthenticated])
-    # def favorite(self, request, pk=None):
-    #     if request.method == 'POST':
-    #         return self.add_obj(Favorite, request.user, pk)
-    #     elif request.method == 'DELETE':
-    #         return self.delete_obj(Favorite, request.user, pk)
-
-    # @action(detail=True, methods=['post', 'delete'],
-    #         permission_classes=[IsAuthenticated])
-    # def shopping_cart(self, request, pk=None):
-    #     if request.method == 'POST':
-    #         return self.add_obj(Cart, request.user, pk)
-    #     elif request.method == 'DELETE':
-    #         return self.delete_obj(Cart, request.user, pk)
-    #
-    # def add_obj(self, model, user, pk):
-    #     if model.objects.filter(user=user, recipe__id=pk).exists():
-    #         return Response({
-    #             'errors': 'Ошибка добавления рецепта в список'
-    #         }, status=status.HTTP_400_BAD_REQUEST)
-    #     recipe = get_object_or_404(Recipe, id=pk)
-    #     model.objects.create(user=user, recipe=recipe)
-    #     serializer = ShortRecipeSerializer(recipe)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #
-    # def delete_obj(self, model, user, pk):
-    #     obj = model.objects.filter(user=user, recipe__id=pk)
-    #     if obj.exists():
-    #         obj.delete()
-    #         return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response({
-    #         'errors': 'Ошибка удаления рецепта из списка'
-    #     }, status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])

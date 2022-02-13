@@ -5,7 +5,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag, Cart  # isort:skip
+from recipes.models import Ingredient, IngredientAmount, Recipe, Tag  # isort:skip
 from users.models import Follow  # isort:skip
 
 User = get_user_model()
@@ -69,9 +69,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
     ingredients = serializers.SerializerMethodField()
-    # ingredients = IngredientRecipeSerializer()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    # is_favorited = serializers.SerializerMethodField()
+    # is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.BooleanField(default=False)
+    is_in_shopping_cart = serializers.BooleanField(default=False)
 
     class Meta:
         model = Recipe
@@ -93,17 +94,17 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'id', 'name', 'measurement_unit', amount=F('recipe__amount')
         )
 
-    def get_is_favorited(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Cart.objects.filter(user=user, recipe=obj).exists()
+    # def get_is_favorited(self, obj):
+    #     user = self.context.get('request').user
+    #     if user.is_anonymous:
+    #         return False
+    #     return Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
+    #
+    # def get_is_in_shopping_cart(self, obj):
+    #     user = self.context.get('request').user
+    #     if user.is_anonymous:
+    #         return False
+    #     return Cart.objects.filter(user=user, recipe=obj).exists()
 
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
@@ -195,6 +196,7 @@ class FollowSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
+    # is_subscribed = serializers.BooleanField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
