@@ -36,23 +36,6 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class FollowViewSet(UserViewSet):
     pagination_class = LimitPageNumberPagination
-    # add_serializer = FollowSerializer
-    # queryset = Follow.objects.all()
-    #
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     if user.is_authenticated:
-    #         queryset = User.objects.all().annotate(
-    #             is_subscribed=Exists(Follow.objects.filter(
-    #                 user=user, author__pk=OuterRef('pk'))
-    #             )
-    #         )
-    #         return queryset
-    #
-    #     queryset = User.objects.all().annotate(
-    #         is_subscribed=Value(False, output_field=BooleanField())
-    #     )
-    #     return queryset
 
     @action(
         methods=['post', ], detail=True, permission_classes=[IsAuthenticated])
