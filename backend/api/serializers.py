@@ -115,6 +115,12 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        author = self.initial_data.get('author')
+        name = self.initial_data.get('name')
+        if Recipe.objects.filter(author=author, name=name).exists():
+            raise serializers.ValidationError(
+                'Вы уже публиковали рецепт с таким названием'
+            )
         ingredients = self.initial_data.get('ingredients')
         ingredients_set = set()
         for ingredient in ingredients:
@@ -150,18 +156,11 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
-        author = self.initial_data.get('author')
-        name = self.initial_data.get('name')
         ingredients = validated_data.pop('ingredients')
         tags = self.initial_data.get('tags')
-        if Recipe.objects.filter(author=author, name=name).exists():
-            raise serializers.ValidationError(
-                'Вы уже публиковали рецепт с таким названием'
-            )
         recipe = super().create(validated_data)
         return self.add_tags_ingredients(
-            recipe, ingredients=ingredients,
-            tags=tags, author=author, name=name)
+            recipe, ingredients=ingredients, tags=tags)
 
     def update(self, instance, validated_data):
         instance.ingredients.clear()
