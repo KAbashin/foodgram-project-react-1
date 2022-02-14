@@ -5,8 +5,8 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag  # isort:skip
-from users.models import Follow  # isort:skip
+from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
+from users.models import Follow
 
 User = get_user_model()
 
@@ -139,6 +139,12 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def add_tags_ingredients(self, instance, **validated_data):
         ingredients = validated_data['ingredients']
         tags = validated_data['tags']
+        author = validated_data['author']
+        name = validated_data['name']
+        if Recipe.objects.filter(author=author, name=name).exists():
+            raise serializers.ValidationError(
+                'Вы уже публиковали рецепт с таким названием'
+            )
         for tag in tags:
             instance.tags.add(tag)
 
@@ -150,11 +156,13 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
+        author = self.initial_data.get('author')
+        name = self.initial_data.get('name')
         ingredients = validated_data.pop('ingredients')
         tags = self.initial_data.get('tags')
         recipe = super().create(validated_data)
         return self.add_tags_ingredients(
-            recipe, ingredients=ingredients, tags=tags)
+            recipe, ingredients=ingredients, tags=tags, author=author, name=name)
 
     def update(self, instance, validated_data):
         instance.ingredients.clear()

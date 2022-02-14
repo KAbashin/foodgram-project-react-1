@@ -158,50 +158,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'errors': 'Ошибка удаления рецепта из списка'
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    # @action(detail=True, methods=['post'],
-    #         permission_classes=[IsAuthenticated])
-    # def favorite(self, request, pk=None):
-    #     if Favorite.objects.filter(user=request.user, recipe__id=pk).exists():
-    #         return Response({
-    #             'errors': 'Ошибка добавления, рецепт уже в избранном'
-    #         }, status=status.HTTP_400_BAD_REQUEST)
-    #     recipe = get_object_or_404(Recipe, id=pk)
-    #     Favorite.objects.create(user=request.user, recipe=recipe)
-    #     serializer = ShortRecipeSerializer(recipe)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # @favorite.mapping.delete
-    # def del_from_favorite(self, request, pk=None):
-    #     obj = Favorite.objects.filter(user=request.user, recipe__id=pk)
-    #     if obj.exists():
-    #         obj.delete()
-    #         return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response({
-    #         'errors': 'Ошибка удаления, рецепта нет в избранном'
-    #     }, status=status.HTTP_400_BAD_REQUEST)
-
-    # @action(detail=True, methods=['post'],
-    #         permission_classes=[IsAuthenticated])
-    # def shopping_cart(self, request, pk=None):
-    #     if Cart.objects.filter(user=request.user, recipe__id=pk).exists():
-    #         return Response({
-    #             'errors': 'Ошибка добавления, рецепт уже в списке покупок'
-    #         }, status=status.HTTP_400_BAD_REQUEST)
-    #     recipe = get_object_or_404(Recipe, id=pk)
-    #     Cart.objects.create(user=request.user, recipe=recipe)
-    #     serializer = ShortRecipeSerializer(recipe)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # @shopping_cart.mapping.delete
-    # def del_from_shopping_cart(self, request, pk=None):
-    #     obj = Cart.objects.filter(user=request.user, recipe__id=pk)
-    #     if obj.exists():
-    #         obj.delete()
-    #         return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response({
-    #         'errors': 'Ошибка удаления, рецепта нет в списке покупок'
-    #     }, status=status.HTTP_400_BAD_REQUEST)
-
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
