@@ -139,12 +139,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def add_tags_ingredients(self, instance, **validated_data):
         ingredients = validated_data['ingredients']
         tags = validated_data['tags']
-        author = validated_data['author']
-        name = validated_data['name']
-        if Recipe.objects.filter(author=author, name=name).exists():
-            raise serializers.ValidationError(
-                'Вы уже публиковали рецепт с таким названием'
-            )
         for tag in tags:
             instance.tags.add(tag)
 
@@ -160,6 +154,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         name = self.initial_data.get('name')
         ingredients = validated_data.pop('ingredients')
         tags = self.initial_data.get('tags')
+        if Recipe.objects.filter(author=author, name=name).exists():
+            raise serializers.ValidationError(
+                'Вы уже публиковали рецепт с таким названием'
+            )
         recipe = super().create(validated_data)
         return self.add_tags_ingredients(
             recipe, ingredients=ingredients,
