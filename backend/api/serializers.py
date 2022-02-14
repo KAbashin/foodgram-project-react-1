@@ -97,7 +97,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     ingredients = serializers.SerializerMethodField()
     image = Base64ImageField()
-    # author = CustomUserSerializer()
 
     class Meta:
         model = Recipe
