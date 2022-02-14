@@ -103,8 +103,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Recipe.objects.all()
+
         if user.is_authenticated:
-            queryset = Recipe.objects.all().annotate(
+            queryset = queryset.annotate(
                 is_favorited=Exists(Favorite.objects.filter(
                     user=user, recipe__pk=OuterRef('pk'))
                 ),
@@ -112,12 +114,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     user=user, recipe__pk=OuterRef('pk'))
                 )
             )
-            return queryset
-
-        queryset = Recipe.objects.all().annotate(
-            is_favorited=Value(False, output_field=BooleanField()),
-            is_in_shopping_cart=Value(False, output_field=BooleanField())
-        )
+        else:
+            queryset = queryset.annotate(
+                is_favorited=Value(False, output_field=BooleanField()),
+                is_in_shopping_cart=Value(False, output_field=BooleanField())
+            )
         return queryset
 
     @action(detail=True, methods=['post'],
