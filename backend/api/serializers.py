@@ -115,12 +115,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        author = self.initial_data.get('author')
-        name = self.initial_data.get('name')
-        if Recipe.objects.filter(author=author, name=name).exists():
-            raise serializers.ValidationError(
-                'Вы уже публиковали рецепт с таким названием'
-            )
         ingredients = self.initial_data.get('ingredients')
         ingredients_set = set()
         for ingredient in ingredients:
