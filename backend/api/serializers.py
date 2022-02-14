@@ -3,7 +3,7 @@ from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag  # isort:skip
 from users.models import Follow  # isort:skip
@@ -97,6 +97,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     ingredients = serializers.SerializerMethodField()
     image = Base64ImageField()
+    author = CustomUserSerializer()
 
     class Meta:
         model = Recipe
@@ -108,6 +109,13 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Recipe.objects.all(),
+                fields=['name', 'author'],
+                message='Нельзя публиковать рецепты с одинаковыми названиями'
+            )
+        ]
 
     def get_ingredients(self, obj):
         return obj.ingredients.values(
@@ -121,7 +129,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             if type(ingredient.get('amount')) == str:
                 if not ingredient.get('amount').isdigit():
                     raise serializers.ValidationError(
-                        ('Количество ингредиента дольжно быть чилом')
+                        ('Количество ингредиента дольжно быть числом')
                     )
             if int(ingredient.get('amount')) <= 0:
                 raise serializers.ValidationError(
