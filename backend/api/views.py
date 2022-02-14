@@ -38,7 +38,7 @@ class FollowViewSet(UserViewSet):
     pagination_class = LimitPageNumberPagination
 
     @action(
-        methods=['post', ], detail=True, permission_classes=[IsAuthenticated])
+        methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, id=id)
@@ -91,7 +91,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
     filter_class = TagFavoritShopingFilter
-    permission_classes = [AdminUserOrReadOnly, ]
+    permission_classes = [AdminUserOrReadOnly]
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
@@ -120,7 +120,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         return queryset
 
-    @action(detail=True, methods=['post', ],
+    @action(detail=True, methods=['post'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         if Favorite.objects.filter(user=request.user, recipe__id=pk).exists():
@@ -142,7 +142,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'errors': 'Ошибка удаления, рецепта нет в избранном'
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post', ],
+    @action(detail=True, methods=['post'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
         if Cart.objects.filter(user=request.user, recipe__id=pk).exists():
