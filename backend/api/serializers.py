@@ -3,10 +3,10 @@ from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
+from rest_framework.validators import UniqueValidator
 
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag  # isort:skip
-from users.models import Follow  # isort:skip
+from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
+from users.models import Follow
 
 User = get_user_model()
 
@@ -97,7 +97,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     ingredients = serializers.SerializerMethodField()
     image = Base64ImageField()
-    author = CustomUserSerializer()
+    # author = CustomUserSerializer()
 
     class Meta:
         model = Recipe
@@ -109,13 +109,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Recipe.objects.all(),
-                fields=['name', 'author'],
-                message='Нельзя публиковать рецепты с одинаковыми названиями'
-            )
-        ]
 
     def get_ingredients(self, obj):
         return obj.ingredients.values(
