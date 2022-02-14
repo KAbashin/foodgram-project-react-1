@@ -162,7 +162,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         tags = self.initial_data.get('tags')
         recipe = super().create(validated_data)
         return self.add_tags_ingredients(
-            recipe, ingredients=ingredients, tags=tags, author=author, name=name)
+            recipe, ingredients=ingredients,
+            tags=tags, author=author, name=name)
 
     def update(self, instance, validated_data):
         instance.ingredients.clear()
